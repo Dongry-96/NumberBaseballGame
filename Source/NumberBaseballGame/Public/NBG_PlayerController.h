@@ -15,14 +15,23 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/***사용자 입력 감지 이벤트에 바인딩되는 메서드(Enter 감지)***/
 	UFUNCTION()
 	void OnInputCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 
+	/***Text Widget 업데이트***/
+	void UpdateText(class UTextBlock* TextBlock, const FString& NewText);
+
+	/***Widget의 Visible 설정***/
+	void SetWidgetVisibility(class UWidget* Widget, bool bVisible);
+
 public:
+	/***서버에 클라이언트 입력 전달, Server RPC(클라이언트에서 호출)***/
 	UFUNCTION(Server, Reliable)
 	void SendGuessToServer(const FString& Input);
 	void SendGuessToServer_Implementation(const FString& Input);
 
+	/***UI 업데이트, Client RPC(서버에서 호출)***/
 	UFUNCTION(Client, Reliable)
 	void UpdateServerText(const FString& NewText);
 	void UpdateServerText_Implementation(const FString& NewText);
@@ -56,6 +65,10 @@ public:
 	void SetTimerTextVisibility_Implementation(bool bVisible);
 
 	UFUNCTION(Client, Reliable)
+	void SetPlayerTextVisibility(bool bVisible);
+	void SetPlayerTextVisibility_Implementation(bool bVisible);
+
+	UFUNCTION(Client, Reliable)
 	void AddHistoryEntry(const FString& NewEntry);
 	void AddHistoryEntry_Implementation(const FString& NewEntry);
 
@@ -63,21 +76,29 @@ public:
 	void ClearHistory();
 	void ClearHistory_Implementation();
 
+	/***Host 지정 메서드***/
 	void SetPlayerRole(bool bHost);
+
+	/***Host 여부 반환 메서드***/
 	bool IsHost() const { return bIsHost; }
 
 private:
+	/***GameMode 레퍼런스***/
+	class ANBG_GameMode* GameMode;
+
+	/***UMG 관련 변수***/
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UUserWidget> PlayerWidgetClass;
-
 	UUserWidget* PlayerWidget;
 
-	class UVerticalBox* HistoryBox;
 	class UTextBlock* ServerText;
 	class UTextBlock* ResultText;
 	class UTextBlock* TriesText;
 	class UTextBlock* TimerText;
+	class UTextBlock* PlayerText;
 	class UEditableTextBox* InputText;
+	class UVerticalBox* HistoryBox;
 
+	/***Host 여부 판단 변수***/
 	bool bIsHost;
 };

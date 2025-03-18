@@ -7,10 +7,13 @@
 
 ANBG_PlayerController::ANBG_PlayerController()
 {
+	GameMode = nullptr;
 	PlayerWidget = nullptr;
 	ServerText = nullptr;
 	ResultText = nullptr;
 	TriesText = nullptr;
+	TimerText = nullptr;
+	PlayerText = nullptr;
 	InputText = nullptr;
 	HistoryBox = nullptr;
 }
@@ -19,7 +22,8 @@ void ANBG_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IsLocalController()) return;
+	if (!IsLocalController()) return; // 클라이언트에서만 실행
+
 	if (!PlayerWidgetClass) return;
 
 	PlayerWidget = CreateWidget<UUserWidget>(this, PlayerWidgetClass);
@@ -31,113 +35,121 @@ void ANBG_PlayerController::BeginPlay()
 		ResultText = Cast<UTextBlock>(PlayerWidget->GetWidgetFromName(TEXT("ResultText")));
 		TriesText = Cast<UTextBlock>(PlayerWidget->GetWidgetFromName(TEXT("TriesText")));
 		TimerText = Cast<UTextBlock>(PlayerWidget->GetWidgetFromName(TEXT("TimerText")));
+		PlayerText = Cast<UTextBlock>(PlayerWidget->GetWidgetFromName(TEXT("PlayerText")));
 		InputText = Cast<UEditableTextBox>(PlayerWidget->GetWidgetFromName(TEXT("InputText")));
 		HistoryBox = Cast<UVerticalBox>(PlayerWidget->GetWidgetFromName(TEXT("HistoryBox")));
 
 		if (InputText)
 		{
 			SetInputVisibility(false);
-			InputText->OnTextCommitted.AddDynamic(this, &ANBG_PlayerController::OnInputCommitted);
+			InputText->OnTextCommitted.AddDynamic(this, &ANBG_PlayerController::OnInputCommitted); // 사용자 입력 감지 이벤트 바인딩
 		}
 		if (TriesText)
 		{
 			UpdateTriesText(0);
 		}
+		if (PlayerText)
+		{
+			bIsHost ? PlayerText->SetText(FText::FromString(FString(TEXT("Host Player")))) :
+				PlayerText->SetText(FText::FromString(FString(TEXT("Guest Player"))));
+		}
 	}
 }
 
+/***사용자 입력 감지 이벤트에 바인딩되는 메서드(Enter 감지)***/
 void ANBG_PlayerController::OnInputCommitted(const FText& Text, ETextCommit::Type CommitMethod)
 {
+	if (!IsLocalController()) return; // 클라이언트에서만 실행
+
 	if (CommitMethod == ETextCommit::OnEnter && !Text.IsEmpty())
 	{
-		SendGuessToServer(Text.ToString());
+		SendGuessToServer(Text.ToString()); // 서버에 클라이언트 입력 전달
 		InputText->SetText(FText::GetEmpty());
 		SetInputVisibility(false);
 	}
 }
 
+/***Text Widget 업데이트***/
+void ANBG_PlayerController::UpdateText(UTextBlock* TextBlock, const FString& NewText)
+{
+	if (TextBlock)
+	{
+		TextBlock->SetText(FText::FromString(NewText));
+	}
+}
+
+/***Widget의 Visible 설정***/
+void ANBG_PlayerController::SetWidgetVisibility(UWidget* Widget, bool bVisible)
+{
+	if (Widget)
+	{
+		Widget->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	}
+}
+
+/***서버에 클라이언트 입력 전달, Server RPC(클라이언트에서 호출)***/
 void ANBG_PlayerController::SendGuessToServer_Implementation(const FString& Input)
 {
-	ANBG_GameMode* GameMode = Cast<ANBG_GameMode>(GetWorld()->GetAuthGameMode());
+	if (!GameMode)
+	{
+		GameMode = Cast<ANBG_GameMode>(GetWorld()->GetAuthGameMode());
+	}
 	if (GameMode)
 	{
 		GameMode->ProcessPlayerGuess(Input, this);
 	}
 }
 
+/***UI 업데이트, Client RPC(서버에서 호출)***/
 void ANBG_PlayerController::UpdateServerText_Implementation(const FString& NewText)
 {
-	if (ServerText)
-	{
-		ServerText->SetText(FText::FromString(NewText));
-	}
+	UpdateText(ServerText, NewText);
 }
 
 void ANBG_PlayerController::UpdateResultText_Implementation(const FString& NewText)
 {
-	if (ResultText)
-	{
-		ResultText->SetText(FText::FromString(NewText));
-	}
+	UpdateText(ResultText, NewText);
 }
 
 void ANBG_PlayerController::UpdateTriesText_Implementation(int32 TriesLeft)
 {
-	if (TriesText)
-	{
-		FString TriesMessage = FString::Printf(TEXT("남은 기회: %d"), 3 - TriesLeft);
-		TriesText->SetText(FText::FromString(TriesMessage));
-	}
+	FString TriesMessage = FString::Printf(TEXT("남은 기회: %d"), 3 - TriesLeft);
+	UpdateText(TriesText, TriesMessage);
 }
 
 void ANBG_PlayerController::UpdateTimerText_Implementation(int32 SecondsLeft)
 {
-	if (TimerText)
-	{
-		FString TimerMessage = FString::Printf(TEXT("%d"), SecondsLeft);
-		TimerText->SetText(FText::FromString(TimerMessage));
-	}
+	FString TimerMessage = FString::Printf(TEXT("%d"), SecondsLeft);
+	UpdateText(TimerText, TimerMessage);
 }
 
 void ANBG_PlayerController::SetResultTextVisibility_Implementation(bool bVisible)
 {
-	if (ResultText)
-	{
-		ResultText->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-	}
+	SetWidgetVisibility(ResultText, bVisible);
 }
 
 void ANBG_PlayerController::SetInputVisibility_Implementation(bool bVisible)
 {
 	if (InputText)
 	{
-		if (bVisible)
-		{
-			InputText->SetVisibility(ESlateVisibility::Visible);
-			InputText->SetIsEnabled(bVisible);
-		}
-		else
-		{
-			InputText->SetVisibility(ESlateVisibility::Hidden);
-			InputText->SetIsEnabled(!bVisible);
-		}
+		SetWidgetVisibility(InputText, bVisible);
+		InputText->SetIsEnabled(bVisible);
 	}
 }
 
 void ANBG_PlayerController::SetTriesTextVisibility_Implementation(bool bVisible)
 {
-	if (TriesText)
-	{
-		TriesText->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-	}
+	SetWidgetVisibility(TriesText, bVisible);
 }
 
 void ANBG_PlayerController::SetTimerTextVisibility_Implementation(bool bVisible)
 {
-	if (TimerText)
-	{
-		TimerText->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-	}
+	SetWidgetVisibility(TimerText, bVisible);
+}
+
+void ANBG_PlayerController::SetPlayerTextVisibility_Implementation(bool bVisible)
+{
+	SetWidgetVisibility(PlayerText, bVisible);
 }
 
 void ANBG_PlayerController::AddHistoryEntry_Implementation(const FString& NewEntry)
@@ -163,6 +175,7 @@ void ANBG_PlayerController::ClearHistory_Implementation()
 	}
 }
 
+/***Host 지정 메서드***/
 void ANBG_PlayerController::SetPlayerRole(bool bHost)
 {
 	bIsHost = bHost;
