@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
 #include "Components/VerticalBox.h"
+#include "Net/UnrealNetwork.h" // Replication(네트워크 복제)를 위한 헤더
 
 ANBG_PlayerController::ANBG_PlayerController()
 {
@@ -54,6 +55,14 @@ void ANBG_PlayerController::BeginPlay()
 				PlayerText->SetText(FText::FromString(FString(TEXT("Guest Player"))));
 		}
 	}
+}
+
+/***네트워크에서 변수를 복제할 수 있도록 설정하는 메서드***/
+void ANBG_PlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ANBG_PlayerController, TotalTries);
 }
 
 /***사용자 입력 감지 이벤트에 바인딩되는 메서드(Enter 감지)***/
@@ -113,7 +122,7 @@ void ANBG_PlayerController::UpdateResultText_Implementation(const FString& NewTe
 
 void ANBG_PlayerController::UpdateTriesText_Implementation(int32 TriesLeft)
 {
-	FString TriesMessage = FString::Printf(TEXT("남은 기회: %d"), 3 - TriesLeft);
+	FString TriesMessage = FString::Printf(TEXT("남은 기회: %d"), TotalTries - TriesLeft);
 	UpdateText(TriesText, TriesMessage);
 }
 
@@ -173,6 +182,12 @@ void ANBG_PlayerController::ClearHistory_Implementation()
 	{
 		HistoryBox->ClearChildren();
 	}
+}
+
+/***TotalTries에 대한 동기화 후 실행될 함수, Property Replication***/
+void ANBG_PlayerController::OnRep_TotalTries()
+{
+	UpdateTriesText(0);
 }
 
 /***Host 지정 메서드***/

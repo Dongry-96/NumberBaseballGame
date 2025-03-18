@@ -27,15 +27,15 @@ public:
 	void ResetGame();
 	void ResetGame_Implementation();
 
-protected:
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameRule")
 	int32 TurnCountdown;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameRule")
 	int32 TotalTries;
+
+protected:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void BeginPlay() override;
 
 	/***턴 시작 및 플레이어 UI업데이트***/
 	void StartPlayerTurn();

@@ -24,11 +24,13 @@ void ANBG_GameMode::PostLogin(APlayerController* NewPlayer)
 		{
 			HostPlayer = PlayerController;
 			PlayerController->SetPlayerRole(true);
-		}
+			PlayerController->TotalTries = TotalTries; // 이 코드만으론 서버에 있는 PlayerController의 TotalTries만 값이 변경됨.
+		}											   // 따라서 PlayerController에서 TotalTries를 Replication 속성을 추가하여 자동 동기화 하였음
 		else // 두 번째 플레이어는 Guest
 		{
 			GuestPlayer = PlayerController;
 			PlayerController->SetPlayerRole(false);
+			PlayerController->TotalTries = TotalTries;
 		}
 	}
 }
@@ -245,7 +247,7 @@ void ANBG_GameMode::BroadcastMessageToAllPlayers(const FString& Message, bool bV
 	{
 		ANBG_PlayerController* PlayerController = Cast<ANBG_PlayerController>(It->Get());
 		if (PlayerController)
-		{
+		{	
 			PlayerController->UpdateServerText(Message);
 			PlayerController->SetInputVisibility(bVisible);
 			PlayerController->SetResultTextVisibility(bVisible);

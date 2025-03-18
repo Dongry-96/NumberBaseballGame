@@ -15,6 +15,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/***네트워크에서 변수를 복제할 수 있도록 설정하는 메서드***/
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	/***사용자 입력 감지 이벤트에 바인딩되는 메서드(Enter 감지)***/
 	UFUNCTION()
 	void OnInputCommitted(const FText& Text, ETextCommit::Type CommitMethod);
@@ -75,6 +78,15 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClearHistory();
 	void ClearHistory_Implementation();
+
+	/***TotalTries에 대한 동기화 후 실행될 함수, Property Replication***/
+	UFUNCTION()
+	void OnRep_TotalTries();
+
+	/***Replication 설정 및 OnRep 함수 바인딩***/
+	// 서버에서 값 변경 시, 자동으로 동기화
+	UPROPERTY(ReplicatedUsing = OnRep_TotalTries)
+	int32 TotalTries;
 
 	/***Host 지정 메서드***/
 	void SetPlayerRole(bool bHost);
