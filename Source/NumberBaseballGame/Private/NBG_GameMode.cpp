@@ -4,6 +4,7 @@
 
 ANBG_GameMode::ANBG_GameMode()
 {
+	TurnCountdown = 15;
 	CurrentTurn = 0;
 	HostTries = 0;
 	GuestTries = 0;
@@ -86,13 +87,13 @@ void ANBG_GameMode::StartPlayerTurn()
 	if (CurrentPlayer)
 	{
 		CurrentPlayer->UpdateServerText(TEXT("당신의 차례입니다. 숫자를 입력하세요!"));
-		CurrentPlayer->UpdateResultText(TEXT("예: /369 형식으로 숫자를 입력하세요."));
+		CurrentPlayer->UpdateResultText(TEXT("1 ~ 9까지의 숫자 중, 중복 없는 세 자리 숫자를 입력하세요.\n 예: /369"));
 		CurrentPlayer->SetInputVisibility(true);
 		CurrentPlayer->SetResultTextVisibility(true);
 		CurrentPlayer->SetTriesTextVisibility(true);
 		CurrentPlayer->SetTimerTextVisibility(true);
 
-		CountdownTime = 10;
+		CountdownTime = TurnCountdown;
 		GetWorldTimerManager().SetTimer(TurnTimerHandle, this, &ANBG_GameMode::UpdateCountdown, 1.0f, true);
 	}
 
@@ -112,7 +113,7 @@ void ANBG_GameMode::ProcessPlayerGuess_Implementation(const FString& PlayerGuess
 
 	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
 	Player->SetTimerTextVisibility(false);
-	Player->UpdateTimerText(10);
+	Player->UpdateTimerText(TurnCountdown);
 
 	bool bIsHost = (Player == HostPlayer);
 	FString PlayerType = bIsHost ? TEXT("Host") : TEXT("Guest");
@@ -261,7 +262,7 @@ void ANBG_GameMode::HandleTurnTimeOut()
 	if (CurrentPlayer)
 	{
 		CurrentPlayer->SetTimerTextVisibility(false);
-		CurrentPlayer->UpdateTimerText(10);
+		CurrentPlayer->UpdateTimerText(TurnCountdown);
 	}
 
 	CurrentTurn = (CurrentTurn == 0) ? 1 : 0;
@@ -289,12 +290,19 @@ bool ANBG_GameMode::IsValidInput(const FString& Input)
 	if (Input.Len() != 4 || !Input.StartsWith(TEXT("/"))) return false;
 
 	FString PureInput = Input.Right(3);
+	TSet<TCHAR> UniqueDigits;
+
 	for (TCHAR Char : PureInput)
 	{
-		if (!FChar::IsDigit(Char))
+		if (!FChar::IsDigit(Char) || Char == '0')
 		{
 			return false;
 		}
+		if (UniqueDigits.Contains(Char))
+		{
+			return false;
+		}
+		UniqueDigits.Add(Char);
 	}
 	return true;
 }

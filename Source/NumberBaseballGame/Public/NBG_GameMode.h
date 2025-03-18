@@ -26,22 +26,26 @@ protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState")
+	int32 TurnCountdown;
+
 	void StartPlayerTurn();
 	bool IsValidInput(const FString& Input);
 	void CheckGameStatus(const FString& PlayerType, const int& Strike, const int& Ball);
 	void UpdateCountdown();
 	void HandleTurnTimeOut();
 
+
 private:
 	class ANBG_PlayerController* HostPlayer;
 	class ANBG_PlayerController* GuestPlayer;
 
-	FString SecretNumber;
-	FString CorrectAnswerMessage;
+	int32 CountdownTime;
 	int32 CurrentTurn;
 	int32 HostTries;
 	int32 GuestTries;
-	int32 CountdownTime;
+	FString SecretNumber;
+	FString CorrectAnswerMessage;
 
 	FTimerHandle TurnTimerHandle;
 };
