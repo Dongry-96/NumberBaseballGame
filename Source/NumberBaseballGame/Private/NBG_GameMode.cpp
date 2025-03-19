@@ -126,7 +126,7 @@ void ANBG_GameMode::HandleTurnTimeOut()
 }
 
 /***플레이어 입력 처리***/
-void ANBG_GameMode::ProcessPlayerGuess_Implementation(const FString& PlayerGuess, ANBG_PlayerController* Player)
+void ANBG_GameMode::ProcessPlayerGuess(const FString& PlayerGuess, ANBG_PlayerController* Player)
 {
 	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
 	Player->Client_SetTimerTextVisibility(false);

@@ -17,15 +17,13 @@ public:
 	void StartNewGame();
 	void StartNewGame_Implementation();
 
-	/***플레이어 입력 처리***/
-	UFUNCTION(Server, Reliable)
-	void ProcessPlayerGuess(const FString& PlayerGuess, class ANBG_PlayerController* Player);
-	void ProcessPlayerGuess_Implementation(const FString& PlayerGuess, class ANBG_PlayerController* Player);
-
 	/***게임 종료 및 재시작***/
 	UFUNCTION(Server, Reliable)
 	void ResetGame();
 	void ResetGame_Implementation();
+
+	/***플레이어 입력 처리***/
+	void ProcessPlayerGuess(const FString& PlayerGuess, class ANBG_PlayerController* Player);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameRule")
 	int32 TurnCountdown;
@@ -42,6 +40,8 @@ protected:
 
 	/***현재 입력 플레이어 시간제한***/
 	void UpdateCountdown();
+
+	
 
 	/***타임 아웃 적용***/
 	void HandleTurnTimeOut();
