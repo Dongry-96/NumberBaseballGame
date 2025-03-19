@@ -41,8 +41,6 @@ protected:
 	/***현재 입력 플레이어 시간제한***/
 	void UpdateCountdown();
 
-	
-
 	/***타임 아웃 적용***/
 	void HandleTurnTimeOut();
 

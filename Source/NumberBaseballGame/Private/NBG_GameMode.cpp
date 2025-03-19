@@ -39,9 +39,6 @@ void ANBG_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FString ServerMessage = FString(TEXT("숫자 야구 게임을 시작합니다!"));
-	BroadcastMessageToAllPlayers(ServerMessage, false);
-
 	FTimerHandle StartGameTimer;
 	GetWorldTimerManager().SetTimer(StartGameTimer, this, &ANBG_GameMode::StartNewGame, 0.5f, false);
 }
@@ -49,6 +46,9 @@ void ANBG_GameMode::BeginPlay()
 /***새 게임 시작***/
 void ANBG_GameMode::StartNewGame_Implementation()
 {
+	FString ServerMessage = FString(TEXT("숫자 야구 게임을 시작합니다!"));
+	BroadcastMessageToAllPlayers(ServerMessage, false);
+
 	// 랜덤 숫자 생성
 	TArray<int32> Numbers;
 	while (Numbers.Num() < 3)
