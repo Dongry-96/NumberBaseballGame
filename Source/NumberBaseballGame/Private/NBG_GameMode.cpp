@@ -101,7 +101,7 @@ void ANBG_GameMode::UpdateCountdown()
 	ANBG_PlayerController* CurrentPlayer = (CurrentTurn == 0) ? HostPlayer : GuestPlayer;
 	if (CurrentPlayer && CountdownTime > 0)
 	{
-		CurrentPlayer->UpdateTimerText(CountdownTime);
+		CurrentPlayer->Client_UpdateTimerText(CountdownTime);
 		CountdownTime--;
 	}
 	else
@@ -129,8 +129,8 @@ void ANBG_GameMode::HandleTurnTimeOut()
 void ANBG_GameMode::ProcessPlayerGuess_Implementation(const FString& PlayerGuess, ANBG_PlayerController* Player)
 {
 	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
-	Player->SetTimerTextVisibility(false);
-	Player->UpdateTimerText(TurnCountdown);
+	Player->Client_SetTimerTextVisibility(false);
+	Player->Client_UpdateTimerText(TurnCountdown);
 
 	// 유효하지 않은 입력 처리
 	FString PlayerType = (Player == HostPlayer) ? TEXT("Host") : TEXT("Guest");
@@ -197,12 +197,12 @@ void ANBG_GameMode::CheckGameStatus(const FString& PlayerType, const int& Strike
 	if (PlayerType == "Host")
 	{
 		HostTries++;
-		HostPlayer->UpdateTriesText(HostTries);
+		HostPlayer->Client_UpdateTriesText(HostTries);
 	}
 	else
 	{
 		GuestTries++;
-		GuestPlayer->UpdateTriesText(GuestTries);
+		GuestPlayer->Client_UpdateTriesText(GuestTries);
 	}
 
 	// 승리 조건 체크
@@ -234,9 +234,9 @@ void ANBG_GameMode::BroadcastMessageToAllPlayers(const FString& Message)
 		ANBG_PlayerController* PlayerController = Cast<ANBG_PlayerController>(It->Get());
 		if (PlayerController)
 		{
-			PlayerController->UpdateResultText(Message);
-			PlayerController->SetResultTextVisibility(true);
-			PlayerController->AddHistoryEntry(Message);
+			PlayerController->Client_UpdateResultText(Message);
+			PlayerController->Client_SetResultTextVisibility(true);
+			PlayerController->Client_AddHistoryEntry(Message);
 		}
 	}
 }
@@ -248,10 +248,10 @@ void ANBG_GameMode::BroadcastMessageToAllPlayers(const FString& Message, bool bV
 		ANBG_PlayerController* PlayerController = Cast<ANBG_PlayerController>(It->Get());
 		if (PlayerController)
 		{	
-			PlayerController->UpdateServerText(Message);
-			PlayerController->SetInputVisibility(bVisible);
-			PlayerController->SetResultTextVisibility(bVisible);
-			PlayerController->SetTriesTextVisibility(bVisible);
+			PlayerController->Client_UpdateServerText(Message);
+			PlayerController->Client_SetInputVisibility(bVisible);
+			PlayerController->Client_SetResultTextVisibility(bVisible);
+			PlayerController->Client_SetTriesTextVisibility(bVisible);
 		}
 	}
 }
@@ -260,13 +260,13 @@ void ANBG_GameMode::BroadCastMessageToPlayer(ANBG_PlayerController* Player, cons
 {
 	if (Player)
 	{
-		Player->UpdateServerText(ServerMessage);
-		Player->UpdateResultText(ResultMessage);
-		Player->SetInputVisibility(bVisible);
-		Player->SetResultTextVisibility(bVisible);
-		Player->SetTimerTextVisibility(bVisible);
-		Player->SetTriesTextVisibility(true);
-		Player->SetPlayerTextVisibility(true);
+		Player->Client_UpdateServerText(ServerMessage);
+		Player->Client_UpdateResultText(ResultMessage);
+		Player->Client_SetInputVisibility(bVisible);
+		Player->Client_SetResultTextVisibility(bVisible);
+		Player->Client_SetTimerTextVisibility(bVisible);
+		Player->Client_SetTriesTextVisibility(true);
+		Player->Client_SetPlayerTextVisibility(true);
 	}
 }
 
@@ -277,8 +277,8 @@ void ANBG_GameMode::EndGameMessageToAllPlayers(const FString& Message)
 		ANBG_PlayerController* PlayerController = Cast<ANBG_PlayerController>(It->Get());
 		if (PlayerController)
 		{
-			PlayerController->UpdateServerText(Message);
-			PlayerController->UpdateResultText(CorrectAnswerMessage);
+			PlayerController->Client_UpdateServerText(Message);
+			PlayerController->Client_UpdateResultText(CorrectAnswerMessage);
 		}
 	}
 	FTimerHandle RestartTimer;
@@ -294,8 +294,8 @@ void ANBG_GameMode::ResetGame_Implementation()
 		ANBG_PlayerController* PlayerController = Cast<ANBG_PlayerController>(It->Get());
 		if (PlayerController)
 		{
-			PlayerController->ClearHistory();
-			PlayerController->UpdateTriesText(0);
+			PlayerController->Client_ClearHistory();
+			PlayerController->Client_UpdateTriesText(0);
 		}
 	}
 	StartNewGame();

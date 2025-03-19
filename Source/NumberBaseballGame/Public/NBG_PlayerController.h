@@ -31,53 +31,53 @@ protected:
 public:
 	/***서버에 클라이언트 입력 전달, Server RPC(클라이언트에서 호출)***/
 	UFUNCTION(Server, Reliable)
-	void SendGuessToServer(const FString& Input);
-	void SendGuessToServer_Implementation(const FString& Input);
+	void Server_SendGuessToServer(const FString& Input);
+	void Server_SendGuessToServer_Implementation(const FString& Input);
 
 	/***UI 업데이트, Client RPC(서버에서 호출)***/
 	UFUNCTION(Client, Reliable)
-	void UpdateServerText(const FString& NewText);
-	void UpdateServerText_Implementation(const FString& NewText);
+	void Client_UpdateServerText(const FString& NewText);
+	void Client_UpdateServerText_Implementation(const FString& NewText);
 
 	UFUNCTION(Client, Reliable)
-	void UpdateResultText(const FString& NewText);
-	void UpdateResultText_Implementation(const FString& NewText);
+	void Client_UpdateResultText(const FString& NewText);
+	void Client_UpdateResultText_Implementation(const FString& NewText);
 
 	UFUNCTION(Client, Reliable)
-	void UpdateTriesText(int32 TriesLeft);
-	void UpdateTriesText_Implementation(int32 TriesLeft);
+	void Client_UpdateTriesText(int32 TriesLeft);
+	void Client_UpdateTriesText_Implementation(int32 TriesLeft);
 
 	UFUNCTION(Client, Reliable)
-	void UpdateTimerText(int32 SecondsLeft);
-	void UpdateTimerText_Implementation(int32 SecondsLeft);
+	void Client_UpdateTimerText(int32 SecondsLeft);
+	void Client_UpdateTimerText_Implementation(int32 SecondsLeft);
 
 	UFUNCTION(Client, Reliable)
-	void SetResultTextVisibility(bool bVisible);
-	void SetResultTextVisibility_Implementation(bool bVisible);
+	void Client_SetResultTextVisibility(bool bVisible);
+	void Client_SetResultTextVisibility_Implementation(bool bVisible);
 
 	UFUNCTION(Client, Reliable)
-	void SetInputVisibility(bool bVisible);
-	void SetInputVisibility_Implementation(bool bVisible);
+	void Client_SetInputVisibility(bool bVisible);
+	void Client_SetInputVisibility_Implementation(bool bVisible);
 
 	UFUNCTION(Client, Reliable)
-	void SetTriesTextVisibility(bool bVisible);
-	void SetTriesTextVisibility_Implementation(bool bVisible);
+	void Client_SetTriesTextVisibility(bool bVisible);
+	void Client_SetTriesTextVisibility_Implementation(bool bVisible);
 
 	UFUNCTION(Client, Reliable)
-	void SetTimerTextVisibility(bool bVisible);
-	void SetTimerTextVisibility_Implementation(bool bVisible);
+	void Client_SetTimerTextVisibility(bool bVisible);
+	void Client_SetTimerTextVisibility_Implementation(bool bVisible);
 
 	UFUNCTION(Client, Reliable)
-	void SetPlayerTextVisibility(bool bVisible);
-	void SetPlayerTextVisibility_Implementation(bool bVisible);
+	void Client_SetPlayerTextVisibility(bool bVisible);
+	void Client_SetPlayerTextVisibility_Implementation(bool bVisible);
 
 	UFUNCTION(Client, Reliable)
-	void AddHistoryEntry(const FString& NewEntry);
-	void AddHistoryEntry_Implementation(const FString& NewEntry);
+	void Client_AddHistoryEntry(const FString& NewEntry);
+	void Client_AddHistoryEntry_Implementation(const FString& NewEntry);
 
 	UFUNCTION(Client, Reliable)
-	void ClearHistory();
-	void ClearHistory_Implementation();
+	void Client_ClearHistory();
+	void Client_ClearHistory_Implementation();
 
 	/***TotalTries에 대한 동기화 후 실행될 함수, Property Replication***/
 	UFUNCTION()

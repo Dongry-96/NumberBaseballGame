@@ -42,12 +42,12 @@ void ANBG_PlayerController::BeginPlay()
 
 		if (InputText)
 		{
-			SetInputVisibility(false);
+			Client_SetInputVisibility(false);
 			InputText->OnTextCommitted.AddDynamic(this, &ANBG_PlayerController::OnInputCommitted); // 사용자 입력 감지 이벤트 바인딩
 		}
 		if (TriesText)
 		{
-			UpdateTriesText(0);
+			Client_UpdateTriesText(0);
 		}
 		if (PlayerText)
 		{
@@ -72,9 +72,9 @@ void ANBG_PlayerController::OnInputCommitted(const FText& Text, ETextCommit::Typ
 
 	if (CommitMethod == ETextCommit::OnEnter && !Text.IsEmpty())
 	{
-		SendGuessToServer(Text.ToString()); // 서버에 클라이언트 입력 전달
+		Server_SendGuessToServer(Text.ToString()); // 서버에 클라이언트 입력 전달
 		InputText->SetText(FText::GetEmpty());
-		SetInputVisibility(false);
+		Client_SetInputVisibility(false);
 	}
 }
 
@@ -97,7 +97,7 @@ void ANBG_PlayerController::SetWidgetVisibility(UWidget* Widget, bool bVisible)
 }
 
 /***서버에 클라이언트 입력 전달, Server RPC(클라이언트에서 호출)***/
-void ANBG_PlayerController::SendGuessToServer_Implementation(const FString& Input)
+void ANBG_PlayerController::Server_SendGuessToServer_Implementation(const FString& Input)
 {
 	if (!GameMode)
 	{
@@ -110,34 +110,34 @@ void ANBG_PlayerController::SendGuessToServer_Implementation(const FString& Inpu
 }
 
 /***UI 업데이트, Client RPC(서버에서 호출)***/
-void ANBG_PlayerController::UpdateServerText_Implementation(const FString& NewText)
+void ANBG_PlayerController::Client_UpdateServerText_Implementation(const FString& NewText)
 {
 	UpdateText(ServerText, NewText);
 }
 
-void ANBG_PlayerController::UpdateResultText_Implementation(const FString& NewText)
+void ANBG_PlayerController::Client_UpdateResultText_Implementation(const FString& NewText)
 {
 	UpdateText(ResultText, NewText);
 }
 
-void ANBG_PlayerController::UpdateTriesText_Implementation(int32 TriesLeft)
+void ANBG_PlayerController::Client_UpdateTriesText_Implementation(int32 TriesLeft)
 {
 	FString TriesMessage = FString::Printf(TEXT("남은 기회: %d"), TotalTries - TriesLeft);
 	UpdateText(TriesText, TriesMessage);
 }
 
-void ANBG_PlayerController::UpdateTimerText_Implementation(int32 SecondsLeft)
+void ANBG_PlayerController::Client_UpdateTimerText_Implementation(int32 SecondsLeft)
 {
 	FString TimerMessage = FString::Printf(TEXT("%d"), SecondsLeft);
 	UpdateText(TimerText, TimerMessage);
 }
 
-void ANBG_PlayerController::SetResultTextVisibility_Implementation(bool bVisible)
+void ANBG_PlayerController::Client_SetResultTextVisibility_Implementation(bool bVisible)
 {
 	SetWidgetVisibility(ResultText, bVisible);
 }
 
-void ANBG_PlayerController::SetInputVisibility_Implementation(bool bVisible)
+void ANBG_PlayerController::Client_SetInputVisibility_Implementation(bool bVisible)
 {
 	if (InputText)
 	{
@@ -146,22 +146,22 @@ void ANBG_PlayerController::SetInputVisibility_Implementation(bool bVisible)
 	}
 }
 
-void ANBG_PlayerController::SetTriesTextVisibility_Implementation(bool bVisible)
+void ANBG_PlayerController::Client_SetTriesTextVisibility_Implementation(bool bVisible)
 {
 	SetWidgetVisibility(TriesText, bVisible);
 }
 
-void ANBG_PlayerController::SetTimerTextVisibility_Implementation(bool bVisible)
+void ANBG_PlayerController::Client_SetTimerTextVisibility_Implementation(bool bVisible)
 {
 	SetWidgetVisibility(TimerText, bVisible);
 }
 
-void ANBG_PlayerController::SetPlayerTextVisibility_Implementation(bool bVisible)
+void ANBG_PlayerController::Client_SetPlayerTextVisibility_Implementation(bool bVisible)
 {
 	SetWidgetVisibility(PlayerText, bVisible);
 }
 
-void ANBG_PlayerController::AddHistoryEntry_Implementation(const FString& NewEntry)
+void ANBG_PlayerController::Client_AddHistoryEntry_Implementation(const FString& NewEntry)
 {
 	if (!HistoryBox) return;
 
@@ -176,7 +176,7 @@ void ANBG_PlayerController::AddHistoryEntry_Implementation(const FString& NewEnt
 	}
 }
 
-void ANBG_PlayerController::ClearHistory_Implementation()
+void ANBG_PlayerController::Client_ClearHistory_Implementation()
 {
 	if (HistoryBox)
 	{
@@ -187,7 +187,7 @@ void ANBG_PlayerController::ClearHistory_Implementation()
 /***TotalTries에 대한 동기화 후 실행될 함수, Property Replication***/
 void ANBG_PlayerController::OnRep_TotalTries()
 {
-	UpdateTriesText(0);
+	Client_UpdateTriesText(0);
 }
 
 /***Host 지정 메서드***/
