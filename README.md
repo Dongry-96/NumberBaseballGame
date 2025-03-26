@@ -172,3 +172,4 @@ void ANBG_PlayerController::Client_UpdateTriesText_Implementation(int32 TriesLef
 
 - 🔗 [개발 블로그 원문](https://dong-grae.tistory.com/199)
 - 💻 [GitHub 저장소](https://github.com/Dongry-96/NumberBaseballGame)
+- ▶️ [시연 연상](https://drive.google.com/file/d/1yOcscwxxqGSn1TIfMicToE-ZzI0F_cJ2/view?usp=sharing)
