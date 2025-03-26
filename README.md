@@ -8,7 +8,7 @@
 ## 프로젝트 개요
 
 - **프로젝트 명**: Number Baseball Game
-- **엔진 / 언어**: Unreal Engine 5, C++
+- **엔진 / 언어**: Unreal Engine 5.54, C++
 - **서버 구조**: Listen Server (호스트가 서버 역할 수행)
 - **주요 기능**:
   - 숫자 야구 게임 규칙 기반 턴제 게임
