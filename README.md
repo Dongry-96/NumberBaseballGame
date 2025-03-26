@@ -5,7 +5,7 @@
 
 <br>
 
-## 📌 프로젝트 개요
+## 프로젝트 개요
 
 - **프로젝트 명**: Number Baseball Game
 - **엔진 / 언어**: Unreal Engine 5, C++
@@ -20,7 +20,7 @@
 
 <br>
 
-## 🧠 게임 규칙
+## 게임 규칙
 
 - 서버는 1~9 사이의 서로 다른 숫자 3자리를 무작위로 생성합니다.
 - 플레이어는 **"/123"** 형식으로 숫자를 입력해 정답을 추측합니다.
@@ -47,9 +47,9 @@
 
 <br>
 
-## 🕹️ 네트워크 구조
+## 네트워크 구조
 
-### ✅ 역할 분배: Host vs Guest
+### 역할 분배: Host vs Guest
 
 - `GameMode::PostLogin` 오버라이딩하여 첫 접속자는 **Host**, 이후 접속자는 **Guest**로 자동 분배.
 - `APlayerController`에서 역할을 판별하고 RPC 호출로 UI에 표시됨.
@@ -80,11 +80,11 @@ void ANBG_GameMode::PostLogin(APlayerController* NewPlayer)
 
 <br>
 
-## 🔄 데이터 동기화: RepNotify & RPC
+## 데이터 동기화: RepNotify & RPC
 
 클라이언트와 서버 간 데이터 동기화는 Unreal의 **RepNotify**와 **Client/Server RPC**를 활용합니다.
 
-### 📌 TotalTries 값 동기화 (RepNotify)
+### TotalTries 값 동기화 (RepNotify)
 
 - 서버에서 TotalTries(총 입력 가능 횟수) 값을 설정하면, 클라이언트에 자동으로 복제되고 `OnRep_TotalTries()`가 호출됩니다.
 - 이를 통해 UI 갱신이 일어납니다.
@@ -104,7 +104,7 @@ void ANBG_PlayerController::OnRep_TotalTries()
 }
 ```
 
-### 📌 클라이언트 → 서버: 입력 전달 (Server RPC)
+### 클라이언트 → 서버: 입력 전달 (Server RPC)
 
 - 클라이언트가 입력한 채팅 숫자는 Server RPC를 통해 서버로 전달됩니다.
 
@@ -125,7 +125,7 @@ void ANBG_PlayerController::Server_SendGuessToServer_Implementation(const FStrin
 }
 ```
 
-### 📌 서버 → 클라이언트: UI 갱신 (Client RPC)
+### 서버 → 클라이언트: UI 갱신 (Client RPC)
 
 - 서버에서 게임 로직 결과를 계산한 후, 클라이언트에게 UI를 갱신하라는 명령을 내립니다.
 
@@ -145,7 +145,7 @@ void ANBG_PlayerController::Client_UpdateTriesText_Implementation(int32 TriesLef
 
 <br>
 
-## ⏱️ 턴 제어 시스템
+## 턴 제어 시스템
 
 - Host와 Guest가 번갈아 가며 숫자를 입력
 - 자신의 턴에만 입력 가능
@@ -154,7 +154,7 @@ void ANBG_PlayerController::Client_UpdateTriesText_Implementation(int32 TriesLef
 
 <br>
 
-## 🧪 기술적 포인트
+## 기술적 포인트
 
 | 항목 | 내용 |
 |------|------|
@@ -167,7 +167,7 @@ void ANBG_PlayerController::Client_UpdateTriesText_Implementation(int32 TriesLef
 
 <br>
 
-## 📎 관련 링크
+## 관련 링크
 
 - 🔗 [개발 블로그 원문](https://dong-grae.tistory.com/199)
 - 💻 [GitHub 저장소](https://github.com/Dongry-96/NumberBaseballGame)
