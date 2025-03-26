@@ -47,6 +47,16 @@
 
 <br>
 
+### 턴 제어 시스템
+
+- Host와 Guest가 번갈아 가며 숫자를 입력
+- 자신의 턴에만 입력 가능
+- 일정 시간 내 입력하지 않으면 자동으로 턴이 넘어감
+- 턴은 GameMode에서 제어하며 PlayerController로 전달됨
+
+<br>
+<br>
+
 ## 네트워크 구조
 
 ### 역할 분배: Host vs Guest
@@ -142,15 +152,6 @@ void ANBG_PlayerController::Client_UpdateTriesText_Implementation(int32 TriesLef
 
 이처럼 각 역할과 목적에 따라 **서버와 클라이언트가 명확히 분리된 방식으로 통신**하며,
 게임 내 모든 입력과 출력은 **네트워크 구조 기반으로 처리**됩니다.
-
-<br>
-
-## 턴 제어 시스템
-
-- Host와 Guest가 번갈아 가며 숫자를 입력
-- 자신의 턴에만 입력 가능
-- 일정 시간 내 입력하지 않으면 자동으로 턴이 넘어감
-- 턴은 GameMode에서 제어하며 PlayerController로 전달됨
 
 <br>
 
